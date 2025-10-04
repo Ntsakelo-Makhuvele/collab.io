@@ -28,6 +28,6 @@ COPY --from=builder /app/dist .
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port 80 to the outside world
-EXPOSE 80
+EXPOSE 8080
 
 # Nginx will start automatically
