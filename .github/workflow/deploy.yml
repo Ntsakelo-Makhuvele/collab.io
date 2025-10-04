@@ -1,0 +1,70 @@
+name: Cloud Run CI/CD Pipeline
+
+# Controls when the workflow is triggered
+on:
+  push:
+    branches:
+      - main  # Trigger on pushes to the main branch
+  
+# Define environment variables
+env:
+  PROJECT_ID: collab-io-474116            # REPLACE with your GCP project ID
+  SERVICE_NAME: collab-io-deploy-service      # REPLACE with your desired Cloud Run service name
+  REGION: africa-south1                      # REPLACE with your desired Cloud Run region (e.g., us-west1)
+  GAR_LOCATION: africa-south1                 # REPLACE with your Artifact Registry region (must match REGION or be nearby)
+  GAR_REPOSITORY: collab-io-docker-repo            # REPLACE with your Artifact Registry repository name
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    # Give the GitHub Actions runner permissions to authenticate with Google Cloud
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # --- 1. Authenticate with Google Cloud ---
+      - name: Configure Google Cloud Credentials
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      # --- 2. Configure Docker to use Artifact Registry ---
+      - name: Setup Artifact Registry Docker Access
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.GAR_LOCATION }}-docker.pkg.dev
+          username: _json_key
+          password: ${{ secrets.GCP_SA_KEY }}
+
+      # --- 3. Build, Tag, and Push Image ---
+      - name: Build and Push Docker Image
+        id: build-push
+        run: |
+          # Define the full image path
+          IMAGE_PATH="${{ env.GAR_LOCATION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.GAR_REPOSITORY }}/${{ env.SERVICE_NAME }}:${{ github.sha }}"
+          
+          # Build the image from the Dockerfile in the current directory
+          docker build -t $IMAGE_PATH .
+          
+          # Push the image to Artifact Registry
+          docker push $IMAGE_PATH
+          
+          # Output the image path for the next step (Deployment)
+          echo "IMAGE_PATH=$IMAGE_PATH" >> $GITHUB_ENV
+
+      # --- 4. Deploy to Cloud Run ---
+      - name: Deploy to Cloud Run
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: ${{ env.SERVICE_NAME }}
+          region: ${{ env.REGION }}
+          image: ${{ env.IMAGE_PATH }}
+          # Optional: You may need to set specific flags here:
+          # --platform: managed
+          # --allow-unauthenticated: to make it public
+          # --vpc-connector: if connecting to a VPC
