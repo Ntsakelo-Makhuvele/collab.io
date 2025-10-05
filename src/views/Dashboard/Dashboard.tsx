@@ -2,7 +2,9 @@
 
 const Dashboard = () => {
     return (
-        <div>I am a dashboard protected route</div>
+        <div className="h-[100vh] bg-sky-950">
+
+        </div>
     )
 }
 

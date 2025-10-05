@@ -1,9 +1,11 @@
+import Navbar from "../../components/Navbar";
 
 
 const Home = () => {
+ 
     return (
-        <div>
-            Home
+        <div className="h-[100vh] bg-slate-900">
+           <Navbar />
         </div>
     )
 }
