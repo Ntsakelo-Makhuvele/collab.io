@@ -3,7 +3,6 @@ import cog from '../../assets/cog.svg'
 import { ArrowUpRightIcon } from "@heroicons/react/24/outline";
 import ticket from '../../assets/ticket.svg'
 import chairs from '../../assets/chairs.jpg'
-import event from '../../assets/event.jpg'
 import { Link } from "react-router-dom";
 
 const Home = () => {
