@@ -17,13 +17,10 @@ import ModalDialog from "../../components/ModalDialog";
  
 const Events = () => {
     const [events,setEvents] = useState<EventsData[]>(MockEvents)
-    const [openDialog, setOpenDialog] = useState<boolean>(false);
     // const [dialogType, setDialogType] = useState<dialogType>("")
     const [isOpen, setIsOpen] = useState(false);
     
-    const handleOpenDialog = () => {
-      setOpenDialog(true);
-    }
+   
     const handleTabSelection = (value:string) => {
       if(value !=='all'){
         setEvents(MockEvents);
