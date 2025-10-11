@@ -8,7 +8,7 @@ import { Link } from "react-router-dom";
 const Home = () => {
  
     return (
-        <div className=" bg-slate-900">
+        <div className="bg-slate-900">
            <div className="h-40"> 
            <Navbar />
            </div>

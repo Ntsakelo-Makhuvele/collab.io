@@ -5,6 +5,7 @@ import { Route,Routes } from 'react-router-dom'
 import Dashboard from './views/Dashboard'
 import Login from './views/Auth/Login'
 import Home from './views/Home'
+import Events from './views/Events'
 
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
       <Routes>
       <Route path="/login" element={<Login />} />
       <Route path="/" element={<Home />} />
+      <Route path="/events" element={<Events />} />
       <Route element={<ProtectedRoute />}>
       <Route path="/dashboard" element={<Dashboard />} />
       </Route>
